@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "сщcolor-palette"
+name = "cocolor-palette"
 version = "0.1.0"
 description = ""
 authors = ["Dmitrii Turetskikh <tureckihdmitriq@gmail.com>"]
