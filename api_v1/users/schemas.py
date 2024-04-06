@@ -15,6 +15,11 @@ class UserCreate(UserBase):
     hashed_password: str
 
 
+class AuthUser(BaseModel):
+    login: Annotated[str, MinLen(3), MaxLen(32)]
+    hashed_password: str
+
+
 class UserUpdatePartial(UserCreate):
     pass
 
