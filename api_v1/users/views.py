@@ -4,7 +4,7 @@ from fastapi import APIRouter, status, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from secure import apikey_scheme
-from .controllers import register_user_controller, get_user_by_token
+from .controllers import register_user_controller
 from .responses import post_user_responses
 from api_v1.users.schemas import (
     User,
@@ -30,15 +30,4 @@ async def register_user(
     return await register_user_controller(
         session=session,
         user_in=user_in,
-    )
-
-
-@router.get("/self/", response_model=UserBase)
-async def get_user_by_id(
-    access_token: Annotated[str, Depends(apikey_scheme)],
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
-):
-    return await get_user_by_token(
-        session=session,
-        access_token=access_token,
     )
