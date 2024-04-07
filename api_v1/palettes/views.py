@@ -1,11 +1,7 @@
-import uuid
-from typing import Annotated
-
 from fastapi import (
     APIRouter,
     status,
     Depends,
-    Path,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
