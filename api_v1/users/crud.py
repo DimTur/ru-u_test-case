@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api_v1.auth.utils import hash_password
 from api_v1.users.schemas import UserCreate
 from core.models import User
-from secure import pwd_context
 
 
 async def register_user_controller(session: AsyncSession, user_in: UserCreate) -> User:
