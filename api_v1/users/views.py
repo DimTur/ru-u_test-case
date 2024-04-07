@@ -5,7 +5,7 @@ from fastapi import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .controllers import register_user_controller
+from .crud import register_user_controller
 from .responses import post_user_responses
 from api_v1.users.schemas import (
     User,
