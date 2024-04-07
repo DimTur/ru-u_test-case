@@ -1,9 +1,13 @@
 import uuid
+from typing import TYPE_CHECKING
 
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
+
+if TYPE_CHECKING:
+    from .palette import Palette
 
 
 class User(Base):
@@ -22,3 +26,8 @@ class User(Base):
         nullable=False,
     )
     hashed_password: Mapped[str] = mapped_column(String)
+
+    palettes: Mapped[list["Palette"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
