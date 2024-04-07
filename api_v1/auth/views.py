@@ -2,7 +2,6 @@ from fastapi import (
     APIRouter,
     Depends,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from api_v1.auth.schemas import TokenInfo
 from api_v1.users.schemas import AuthUser, User
@@ -12,7 +11,6 @@ from .dependencies import (
     get_current_token_payload,
 )
 from .utils import encode_jwt
-from core.models.db_helper import db_helper
 
 router = APIRouter(tags=["JWT"])
 

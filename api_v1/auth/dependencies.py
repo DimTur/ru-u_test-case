@@ -5,7 +5,7 @@ from fastapi import (
     Form,
     HTTPException,
 )
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api_v1.auth.crud import get_user_by_login
@@ -14,12 +14,12 @@ from core.models.db_helper import db_helper
 from ..users.schemas import User
 from core.models import User as UserModel
 
-http_bearer = HTTPBearer()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/jwt/login/")
 
 
 async def validate_auth_user(
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
-    login: str = Form(),
+    username: str = Form(),
     password: str = Form(),
 ):
     unauthed_exc = HTTPException(
@@ -27,7 +27,7 @@ async def validate_auth_user(
         detail="Invalid login or password",
     )
     user = await get_user_by_login(
-        login=login,
+        login=username,
         session=session,
     )
 
@@ -44,9 +44,8 @@ async def validate_auth_user(
 
 
 async def get_current_token_payload(
-    credentials: HTTPAuthorizationCredentials = Depends(http_bearer),
+    token: str = Depends(oauth2_scheme),
 ) -> User:
-    token = credentials.credentials
     try:
         payload = decode_jwt(
             token=token,
