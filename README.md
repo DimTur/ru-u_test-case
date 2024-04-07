@@ -1,3 +1,23 @@
-Чтобы узнать ip адрес БД введите команду на Linux: 
-    
-    docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' db_color_palette
+## Запуск приложения
+
+**1. Клонируем репозиторий:**
+
+    git clone https://github.com/DimTur/ru-u_test-case
+
+**2. Перейти в папку /ru-u_test-case**
+
+**3. Поднимаем docker comopose в фоновом режиме**
+
+    docker compose up -d
+
+**4. Пользуемся приложением по адресу http://127.0.0.1:8000/docs**
+
+**5. Чтобы остановить работу контейнеров вводим команду:**
+
+    docker compose down
+
+**Однако, рекомендуется прекращать работу контейнеров с удалением томов, команда:**
+
+    docker compose down -v
+
+**Папка certs/ не должна быть в публичном доступе, в проекте присутствует для ознакомления**
