@@ -1,16 +1,19 @@
 import uuid
 
+from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
+from .color_fetcher import fetch_color_title
 from .schemas import ColorCreate, ColorUpdate
 from core.models import (
     Palette,
     User,
     Color,
 )
+from ..auth.actions import user_has_palette_access
 
 
 async def get_colors(
@@ -39,16 +42,31 @@ async def create_color(
     palette_id: uuid.UUID,
     color_in: ColorCreate,
 ) -> Color:
-    color = Color(
-        user_id=user_id,
-        palette_id=palette_id,
-        **color_in.model_dump(),
-    )
-    session.add(color)
-    await session.commit()
-    await session.refresh(color)
+    try:
+        if not await user_has_palette_access(
+            session=session,
+            user_id=user_id,
+            palette_id=palette_id,
+        ):
+            raise HTTPException(status_code=403, detail="Forbidden access to palette")
 
-    return color
+        title = await fetch_color_title(color_in.hex_color)
+        color = Color(
+            palette_id=palette_id,
+            title=title,
+            hex_color=color_in.hex_color,
+        )
+        session.add(color)
+        await session.commit()
+        await session.refresh(color)
+        return color
+    except HTTPException as e:
+        raise e
+    except Exception:
+        raise HTTPException(
+            status_code=500,
+            detail="Internal server error",
+        )
 
 
 async def get_color_by_id(
@@ -74,15 +92,34 @@ async def get_color_by_id(
 
 async def update_color_partial(
     session: AsyncSession,
+    user_id: uuid.UUID,
     color: Color,
     color_update: ColorUpdate,
     partial: bool = True,
 ) -> Color:
-    for hex_color, value in color_update.model_dump(exclude_unset=partial).items():
-        setattr(color, hex_color, value)
-    await session.commit()
+    try:
+        if not await user_has_palette_access(
+            session=session,
+            user_id=user_id,
+            palette_id=color.palette_id,
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="User does not have access to the palette",
+            )
 
-    return color
+        for field, value in color_update.model_dump(exclude_unset=partial).items():
+            setattr(color, field, value)
+            if "hex_color":
+                title = await fetch_color_title(color_update.hex_color)
+                setattr(color, "title", title)
+        await session.commit()
+        await session.refresh(color)
+        return color
+    except HTTPException as e:
+        raise e
+    except Exception:
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 async def delete_color(

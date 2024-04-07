@@ -76,12 +76,14 @@ async def get_color_by_id(color: Color = Depends(_get_color_by_id)) -> Color:
 async def update_color_partial(
     color_update: ColorUpdate,
     color: Color = Depends(_get_color_by_id),
+    user: User = Depends(get_current_auth_user),
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
     return await crud.update_color_partial(
         session=session,
         color=color,
         color_update=color_update,
+        user_id=user.id,
     )
 
 
