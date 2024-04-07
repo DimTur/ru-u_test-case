@@ -26,7 +26,7 @@ def encode_jwt(
         iat=now,
     )
     encoded = jwt.encode(
-        payload,
+        to_encode,
         key,
         algorithm=algorithm,
     )
@@ -42,7 +42,7 @@ def decode_jwt(
     decoded = jwt.decode(
         token,
         public_key,
-        algorithm=[algorithm],
+        algorithms=[algorithm],
     )
     return decoded
 
