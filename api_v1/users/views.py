@@ -1,15 +1,15 @@
-from typing import Annotated
-
-from fastapi import APIRouter, status, Depends
+from fastapi import (
+    APIRouter,
+    status,
+    Depends,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from secure import apikey_scheme
 from .controllers import register_user_controller
 from .responses import post_user_responses
 from api_v1.users.schemas import (
     User,
     UserCreate,
-    UserBase,
 )
 from core.models.db_helper import db_helper
 
