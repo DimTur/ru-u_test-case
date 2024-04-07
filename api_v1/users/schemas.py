@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict
 
 
 class UserBase(BaseModel):
-    name: Annotated[str, MinLen(3), MaxLen(32)]
+    name: Annotated[str, MinLen(3), MaxLen(32)] | None = None
     login: Annotated[str, MinLen(3), MaxLen(32)]
 
 
